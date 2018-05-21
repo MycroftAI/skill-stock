@@ -13,29 +13,15 @@
 # limitations under the License.
 
 import time
-import xml.etree.ElementTree as ET
-
 import requests
+
 from adapt.intent import IntentBuilder
-from os.path import dirname
-
-from mycroft.skills.core import MycroftSkill
-from mycroft.util.log import getLogger
-
-__author__ = 'eward'
-logger = getLogger(__name__)
+from mycroft import MycroftSkill, intent_handler
 
 
 class StockSkill(MycroftSkill):
-    def __init__(self):
-        super(StockSkill, self).__init__(name="StockSkill")
-
-    def initialize(self):
-        stock_price_intent = IntentBuilder("StockPriceIntent") \
-            .require("StockPriceKeyword").require("Company").build()
-        self.register_intent(stock_price_intent,
-                             self.handle_stock_price_intent)
-
+    @intent_handler(IntentBuilder("") \
+            .require("StockPriceKeyword").require("Company"))
     def handle_stock_price_intent(self, message):
         company = message.data.get("Company")
         try:
@@ -50,24 +36,28 @@ class StockSkill(MycroftSkill):
             self.enclosure.activate_mouth_events()
             self.enclosure.mouth_reset()
 
-        except:
+        except Exception as e:
+            self.log.exception(e)
             self.speak_dialog("not.found", data={'company': company})
 
     def _query(self, url, param_name, query):
         payload = {param_name: query}
         response = requests.get(url, params=payload)
-        return ET.fromstring(response.content)
+        return response
 
     def find_and_query(self, query):
-        root = self._query(
-            "http://dev.markitondemand.com/MODApis/Api/v2/Lookup?",
+        lookup = self._query(
+            "http://dev.markitondemand.com/MODApis/Api/v2/Lookup/json?",
             'input', query)
-        root = self._query(
-            "http://dev.markitondemand.com/Api/v2/Quote?", 'symbol',
-            root.iter('Symbol').next().text)
-        return {'symbol': root.iter('Symbol').next().text,
-                'company': root.iter('Name').next().text,
-                'price': root.iter('LastPrice').next().text}
+        symbol = lookup.json()[0]['Symbol'] if len(lookup.json()) > 0 else None
+        if symbol:
+            quote = self._query(
+                "http://dev.markitondemand.com/Api/v2/Quote/json?",
+                'symbol', symbol)
+            return {'symbol': symbol,
+                    'company': lookup.json()[0].get('Name'),
+                    'price': str(quote.json()['LastPrice'])}
+        return None
 
     def stop(self):
         pass
