@@ -1,2 +1,3 @@
 price of (?P<Company>.*)
+price for (?P<Company>.*)
 is (?P<Company>.*) trading at
