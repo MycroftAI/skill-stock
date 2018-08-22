@@ -26,10 +26,9 @@ class StockSkill(MycroftSkill):
         company = message.data.get("Company")
         try:
             response = self.find_and_query(company)
-            self.emitter.once("recognizer_loop:audio_output_start",
-                              self.enclosure.mouth_text(
-                                  response['symbol'] + ": " + response[
-                                      'price']))
+            self.bus.once("recognizer_loop:audio_output_start",
+                          self.enclosure.mouth_text(
+                              response['symbol'] + ": " + response['price']))
             self.enclosure.deactivate_mouth_events()
             self.speak_dialog("stock.price", data=response)
             time.sleep(12)
