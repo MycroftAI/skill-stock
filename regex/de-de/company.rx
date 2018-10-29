@@ -1,2 +1,2 @@
-Preis von (?P<Company>.*)
-wie wird (?P<Company>.*) gehandelt
+Preis der(?P<Company>.*)
+ist (?P<Company>.*) gehandelt bei
