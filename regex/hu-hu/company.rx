@@ -1,0 +1,2 @@
+(?P<Company>.*) ára
+kereskednek (a|az|) (?P<Company>.*) részvényeivel|részvényekkel

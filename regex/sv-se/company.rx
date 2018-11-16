@@ -1,0 +1,2 @@
+priset på (?P<Company>.*)
+säljer (?P<Company>.*) för

@@ -1,2 +1,2 @@
-{{company}}, mit Ticker symbol {{symbol}} Derzeit gehandelt zu {{price}} Euros pro Anteil.
-mit Ticker symbol {{symbol}}, der {{company}} liegt preislich bei {{price}} Euro pro Anteil.
+{{company}}, mit Tickersymbol {{symbol}} wird derzeit zum {{price}} Dollar pro Aktie gehandelt.
+Mit Tickersymbol {{Symbol}} beträgt der aktuelle Preis von {{company}} {{price}} Dollar pro Aktie.
