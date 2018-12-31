@@ -1,0 +1,2 @@
+koers van (?P<Company>.*)
+wordt (?P<Company>.*) verhandeld tegen
