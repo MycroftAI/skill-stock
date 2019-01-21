@@ -1,2 +1,2 @@
 precio de (?P<Company>.*)
-esta (?P<Company>.*) comercializandose a
+está (?P<Company>.*) cotizándose a
