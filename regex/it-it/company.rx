@@ -1,0 +1,2 @@
+prezzo di (?P<Company>.*)
+(?P<Company>.*) è negoziata a
