@@ -1,2 +1,2 @@
 prezzo di (?P<Company>.*)
-(?P<Company>.*) è negoziata a
+la (?P<Company>.*) è negoziata a
