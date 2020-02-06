@@ -20,8 +20,12 @@ from mycroft import MycroftSkill, intent_handler
 
 
 class StockSkill(MycroftSkill):
-    @intent_handler(IntentBuilder("") \
-            .require("StockPriceKeyword").require("Company"))
+    def __init__(self):
+        super().__init__()
+        raise Exception('Skill has been disabled by Mycroft')
+
+    # @intent_handler(IntentBuilder("") \
+    #         .require("StockPriceKeyword").require("Company"))
     def handle_stock_price_intent(self, message):
         company = message.data.get("Company")
         try:
