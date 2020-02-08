@@ -87,9 +87,6 @@ class StockSkill(MycroftSkill):
             self.log.exception(e)
             self.speak_dialog("not.found", data={'company': company})
 
-    def stop(self):
-        pass
-
 
 def create_skill():
     return StockSkill()
