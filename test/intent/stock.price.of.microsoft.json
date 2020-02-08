@@ -4,5 +4,6 @@
   "intent": {
       "StockPriceKeyword": "stock price",
       "Company": "microsoft"
-  }
+  },
+  "expected_dialog": "stock.price"
 }
