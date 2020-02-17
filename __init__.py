@@ -33,21 +33,30 @@ PROFILE_QUERY = API_URL + 'company/profile/{}'
 def search_company(query):
     """Search for a company and return the ticker symbol."""
     lookup = requests.get(SEARCH_QUERY.format(query))
-    if len(lookup.json()) == 0:
-        return None # Nothing found
+    if 200 <= lookup.status_code < 300:
+        if len(lookup.json()) == 0:
+            return None # Nothing found
+        else:
+            # Create dict with company name as key
+            company_dict = {c['name'].lower(): c for c in lookup.json()}
+            info, confidence = match_one(query.lower(), company_dict)
+            # Return None if the confidence is too low otherwise
+            # return the closest match.
+            return info['symbol'] if confidence > 0.5 else None
     else:
-        # Create dict with company name as key
-        company_dict = {c['name'].lower(): c for c in lookup.json()}
-        info, confidence = match_one(query.lower(), company_dict)
-        # Return None if the confidence is too low otherwise
-        # return the closest match.
-        return info['symbol'] if confidence > 0.5 else None
+        # HTTP Status indicates something went wrong
+        raise requests.HTTPError('API returned status code: '
+                                 '{}'.format(response.status_code))
 
 
 def get_company_profile(symbol):
     """Get the profile of a company given the symbol."""
     response = requests.get(PROFILE_QUERY.format(symbol))
-    return response.json().get('profile', {})
+    if 200 <= response.status_code < 300:
+        return response.json().get('profile', {})
+    else:
+        raise requests.HTTPError('API returned status code: '
+                                 '{}'.format(response.status_code))
 
 
 def find_and_query(query):
@@ -83,6 +92,8 @@ class StockSkill(MycroftSkill):
             self.enclosure.activate_mouth_events()
             self.enclosure.mouth_reset()
 
+        except requests.HTTPError as e:
+            self.speak_dialog("api.error", data={'error': str(e)})
         except Exception as e:
             self.log.exception(e)
             self.speak_dialog("not.found", data={'company': company})
