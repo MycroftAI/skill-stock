@@ -2,7 +2,7 @@
 Provides current stock prices
 
 ## About 
-Using the [Financial Modeling Prep](https://financialmodelingprep.com/api/v3/) API, you can ask Mycroft to get the current price of stocks. 
+Using the [Financial Modeling Prep](https://financialmodelingprep.com/developer/docs/) API, you can ask Mycroft to get the current price of stocks. 
 
 ## Examples 
 * "Stock price of Google"
