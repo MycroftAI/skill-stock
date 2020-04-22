@@ -35,7 +35,7 @@ def search_company(query):
     lookup = requests.get(SEARCH_QUERY.format(query))
     if 200 <= lookup.status_code < 300:
         if len(lookup.json()) == 0:
-            return None # Nothing found
+            return None  # Nothing found
         else:
             # Create dict with company name as key
             company_dict = {c['name'].lower(): c for c in lookup.json()}
