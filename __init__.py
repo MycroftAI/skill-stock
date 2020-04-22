@@ -46,7 +46,7 @@ def search_company(query):
     else:
         # HTTP Status indicates something went wrong
         raise requests.HTTPError('API returned status code: '
-                                 '{}'.format(response.status_code))
+                                 '{}'.format(lookup.status_code))
 
 
 def get_company_profile(symbol):
