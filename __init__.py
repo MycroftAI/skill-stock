@@ -21,7 +21,8 @@ from mycroft.util.parse import match_one
 
 
 COMPANY_ALIASES = {
-    'google': 'Alphabet inc'
+    'google': 'Alphabet inc',
+    'ibm': 'International Business Machines'
 }
 
 # These are the endpoints for the financial modeling prep open API
@@ -40,7 +41,7 @@ def search_company(query):
             # Create dict with company name as key
             company_dict = {c['name'].lower(): c for c in lookup.json()}
             info, confidence = match_one(query.lower(), company_dict)
-            # Return result if confidence is high enough, or query string 
+            # Return result if confidence is high enough, or query string
             # contained in company name eg Cisco > Cisco Systems
             if confidence > 0.5 or query.lower() in info['name'].lower():
                 return info['symbol']
