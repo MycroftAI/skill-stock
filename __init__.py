@@ -14,7 +14,6 @@
 
 import time
 import requests
-from urllib.parse import quote_plus
 
 from adapt.intent import IntentBuilder
 from mycroft import MycroftSkill, intent_handler
@@ -28,13 +27,13 @@ COMPANY_ALIASES = {
 
 # These are the endpoints for the financial modeling prep open API
 API_URL = 'https://financialmodelingprep.com/api/v3/'
-SEARCH_QUERY = API_URL + 'search?query={}&limit=10'
+SEARCH_QUERY = API_URL + 'search'
 PROFILE_QUERY = API_URL + 'company/profile/{}'
 
 
 def search_company(query):
     """Search for a company and return the ticker symbol."""
-    lookup = requests.get(SEARCH_QUERY.format(quote_plus(query)))
+    lookup = requests.get(SEARCH_QUERY, params={'query': query, 'limit': 10})
     if 200 <= lookup.status_code < 300:
         if len(lookup.json()) == 0:
             return None  # Nothing found
