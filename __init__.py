@@ -14,6 +14,7 @@
 
 import time
 import requests
+from urllib.parse import quote_plus
 
 from adapt.intent import IntentBuilder
 from mycroft import MycroftSkill, intent_handler
@@ -21,7 +22,8 @@ from mycroft.util.parse import match_one
 
 
 COMPANY_ALIASES = {
-    'google': 'Alphabet inc'
+    'google': 'Alphabet inc',
+    'ibm': 'International Business Machines'
 }
 
 # These are the endpoints for the financial modeling prep open API
@@ -32,7 +34,7 @@ PROFILE_QUERY = API_URL + 'company/profile/{}'
 
 def search_company(query):
     """Search for a company and return the ticker symbol."""
-    lookup = requests.get(SEARCH_QUERY.format(query))
+    lookup = requests.get(SEARCH_QUERY.format(quote_plus(query)))
     if 200 <= lookup.status_code < 300:
         if len(lookup.json()) == 0:
             return None  # Nothing found
@@ -40,9 +42,10 @@ def search_company(query):
             # Create dict with company name as key
             company_dict = {c['name'].lower(): c for c in lookup.json()}
             info, confidence = match_one(query.lower(), company_dict)
-            # Return None if the confidence is too low otherwise
-            # return the closest match.
-            return info['symbol'] if confidence > 0.5 else None
+            # Return result if confidence is high enough, or query string
+            # contained in company name eg Cisco > Cisco Systems
+            if confidence > 0.5 or query.lower() in info['name'].lower():
+                return info['symbol']
     else:
         # HTTP Status indicates something went wrong
         raise requests.HTTPError('API returned status code: '
