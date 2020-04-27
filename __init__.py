@@ -35,7 +35,7 @@ def search_company(query):
     lookup = requests.get(SEARCH_QUERY.format(query))
     if 200 <= lookup.status_code < 300:
         if len(lookup.json()) == 0:
-            return None # Nothing found
+            return None  # Nothing found
         else:
             # Create dict with company name as key
             company_dict = {c['name'].lower(): c for c in lookup.json()}
@@ -46,7 +46,7 @@ def search_company(query):
     else:
         # HTTP Status indicates something went wrong
         raise requests.HTTPError('API returned status code: '
-                                 '{}'.format(response.status_code))
+                                 '{}'.format(lookup.status_code))
 
 
 def get_company_profile(symbol):
