@@ -12,6 +12,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Mycroft Stock skill.
+
+The skill communicates with the Financial Modelling Prep open API to fetch
+stock prices upon user query.
+
+Financial modelling Prep website: https://financialmodelingprep.com/
+"""
 import time
 import requests
 
