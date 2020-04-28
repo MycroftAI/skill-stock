@@ -78,10 +78,8 @@ class StockSkill(MycroftSkill):
                     .require("StockPriceKeyword").require("Company"))
     def handle_stock_price_intent(self, message):
         company = message.data.get("Company")
-        if company in COMPANY_ALIASES:
-            query_company = COMPANY_ALIASES[company]
-        else:
-            query_company = company
+        # Look up a known alias of the company or use the company name directly
+        query_company = COMPANY_ALIASES.get(company, company)
 
         try:
             response = find_and_query(query_company)
