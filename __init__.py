@@ -12,9 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+"""
+Mycroft Stock skill.
+
+The skill communicates with the Financial Modelling Prep open API to fetch
+stock prices upon user query.
+
+Financial modelling Prep website: https://financialmodelingprep.com/
+"""
 import time
 import requests
-from urllib.parse import quote_plus
 
 from adapt.intent import IntentBuilder
 from mycroft import MycroftSkill, intent_handler
@@ -28,13 +35,13 @@ COMPANY_ALIASES = {
 
 # These are the endpoints for the financial modeling prep open API
 API_URL = 'https://financialmodelingprep.com/api/v3/'
-SEARCH_QUERY = API_URL + 'search?query={}&limit=10'
+SEARCH_QUERY = API_URL + 'search'
 PROFILE_QUERY = API_URL + 'company/profile/{}'
 
 
 def search_company(query):
     """Search for a company and return the ticker symbol."""
-    lookup = requests.get(SEARCH_QUERY.format(quote_plus(query)))
+    lookup = requests.get(SEARCH_QUERY, params={'query': query, 'limit': 10})
     if 200 <= lookup.status_code < 300:
         if len(lookup.json()) == 0:
             return None  # Nothing found
@@ -79,27 +86,37 @@ class StockSkill(MycroftSkill):
                     .require("StockPriceKeyword").require("Company"))
     def handle_stock_price_intent(self, message):
         company = message.data.get("Company")
-        if company in COMPANY_ALIASES:
-            query_company = COMPANY_ALIASES[company]
-        else:
-            query_company = company
+        # Look up a known alias of the company or use the company name directly
+        query_company = COMPANY_ALIASES.get(company, company)
 
         try:
             response = find_and_query(query_company)
-            self.bus.once("recognizer_loop:audio_output_start",
-                          self.enclosure.mouth_text(
-                              response['symbol'] + ": " + response['price']))
-            self.enclosure.deactivate_mouth_events()
+
+            self.mark_1_info_on_speech(response['symbol'], response['price'])
             self.speak_dialog("stock.price", data=response)
+
             time.sleep(12)
-            self.enclosure.activate_mouth_events()
-            self.enclosure.mouth_reset()
+            self.mark_1_display_release()
 
         except requests.HTTPError as e:
             self.speak_dialog("api.error", data={'error': str(e)})
         except Exception as e:
             self.log.exception(e)
             self.speak_dialog("not.found", data={'company': company})
+
+    def mark_1_info_on_speech(self, symbol, price):
+        """Show the ticker symbol and price on the Mark-1 display when speaking
+        """
+        # When speech starts, output the information on the Mark-1 display
+        self.bus.once("recognizer_loop:audio_output_start",
+                      self.enclosure.mouth_text("{}: {}".format(symbol, price))
+                      )
+        self.enclosure.deactivate_mouth_events()
+
+    def mark_1_display_release(self):
+        """Reset Mark-1 display if it was taken by the skill."""
+        self.enclosure.activate_mouth_events()
+        self.enclosure.mouth_reset()
 
 
 def create_skill():
