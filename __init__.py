@@ -85,20 +85,32 @@ class StockSkill(MycroftSkill):
 
         try:
             response = find_and_query(query_company)
-            self.bus.once("recognizer_loop:audio_output_start",
-                          self.enclosure.mouth_text(
-                              response['symbol'] + ": " + response['price']))
-            self.enclosure.deactivate_mouth_events()
+
+            self.mark_1_info_on_speech(response['symbol'], response['price'])
             self.speak_dialog("stock.price", data=response)
+
             time.sleep(12)
-            self.enclosure.activate_mouth_events()
-            self.enclosure.mouth_reset()
+            self.mark_1_display_release()
 
         except requests.HTTPError as e:
             self.speak_dialog("api.error", data={'error': str(e)})
         except Exception as e:
             self.log.exception(e)
             self.speak_dialog("not.found", data={'company': company})
+
+    def mark_1_info_on_speech(self, symbol, price):
+        """Show the ticker symbol and price on the Mark-1 display when speaking
+        """
+        # When speech starts, output the information on the Mark-1 display
+        self.bus.once("recognizer_loop:audio_output_start",
+                      self.enclosure.mouth_text("{}: {}".format(symbol, price))
+                      )
+        self.enclosure.deactivate_mouth_events()
+
+    def mark_1_display_release(self):
+        """Reset Mark-1 display if it was taken by the skill."""
+        self.enclosure.activate_mouth_events()
+        self.enclosure.mouth_reset()
 
 
 def create_skill():
