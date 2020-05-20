@@ -82,6 +82,10 @@ def find_and_query(query):
 
 
 class StockSkill(MycroftSkill):
+    def __init__(self):
+        super().__init__()
+        raise Exception('Skill has been disabled by Mycroft')
+
     @intent_handler(IntentBuilder("")
                     .require("StockPriceKeyword").require("Company"))
     def handle_stock_price_intent(self, message):

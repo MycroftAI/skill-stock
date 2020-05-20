@@ -1,3 +1,4 @@
+@xfail
 Feature: mycroft-stock
 
   Scenario: what is microsoft trading at
