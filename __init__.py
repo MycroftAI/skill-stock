@@ -84,7 +84,11 @@ def find_and_query(query):
 class StockSkill(MycroftSkill):
     def __init__(self):
         super().__init__()
-        raise Exception('Skill has been disabled by Mycroft')
+        self.log.info("The Stock Skill has been disabled due to a")
+        self.log.info("breaking change made to the 3rd party API")
+        self.log.info("For further information, see:")
+        self.log.info("https://github.com/MycroftAI/skill-stock/issues/31")
+        raise Exception('Skill has been intentionally disabled by Mycroft')
 
     @intent_handler(IntentBuilder("")
                     .require("StockPriceKeyword").require("Company"))
