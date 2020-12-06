@@ -1,0 +1,2 @@
+prezo de (?P<Company>.*)
+(?P<Company>.*) está negociando a
